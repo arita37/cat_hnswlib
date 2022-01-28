@@ -102,11 +102,11 @@ class BuildExt(build_ext):
 
 
 setup(
-    name='cat_hnswlib',
+    name='hnswcat',
     version=__version__,
     description='hnswlib with categorical filters',
-    author='Andrey Vasnetsov',
-    url='https://github.com/generall/hnswlib',
+    author='nono',
+    url='',
     long_description="""hnsw""",
     ext_modules=ext_modules,
     install_requires=['pybind11>=2.0', 'numpy'],

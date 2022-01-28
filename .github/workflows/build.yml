@@ -1,0 +1,42 @@
+name: zbuild_hnsw
+
+on:
+  push:
+    branches:
+      - djoko
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: 'centos:7'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup
+        run: |
+          echo "Install dependencies"
+          yum -y install curl bzip2 git glibc-devel
+
+          echo "Install miniconda"
+          curl -sSL https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -o /tmp/miniconda.sh
+          bash /tmp/miniconda.sh -b -p $HOME/miniconda
+          eval "$($HOME/miniconda/bin/conda shell.bash hook)"
+          
+          echo "create and activate conda environment" 
+          conda create -n test python=3.7 conda-build
+          conda activate test
+          
+          #### Build  ##############################
+          cd build_hnsw
+          conda build -c conda-forge recipe
+
+          # python build_hnsw/test1.py
+ 
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: upload files
+          path: /github/home/miniconda/envs/test/conda-bld/linux-64/hnsw2-*.tar.bz2
+          retention-days: 300

@@ -1,0 +1,67 @@
+{% set name = "hnsw2" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:  
+
+  ### Ok works
+  git_url: https://github.com/arita37/cat_hnswlib.git
+  git_rev: cd4aa89094e7b962f9f800ae78caf06f891c0840
+  
+  ####### djoko branch
+  # git_url: https://github.com/arita37/hnswcat.git
+  # git_rev: 9257ce09b65b06062ee75b5d65432163708abbc6
+  
+  # git_rev:  2d6cd7b74665971f4f5489557234e973fdc7c703
+  #### previous one
+  
+#source:
+#  git_url: https://github.com/heal-research/operon
+#  git_rev: 43dcc09c71c7ba1251284cb3eb59a54c17ec4319
+
+build:
+  number: 0
+  script: |
+    cd python_bindings
+    # pip install -r requirements.txt
+    # python setup.py install
+    python -m pip install . -vv    
+    
+requirements:
+  build:
+    - make
+    #- pip
+    - cmake
+    - python={{ python }}
+    - gxx={{ gxx }}
+    - numpy==1.19.2
+    #- numpy<1.17.0
+    #- blas
+    #- pytest-runner
+    #- libgomp
+    - pybind11>=2.0
+
+  run:
+    - python={{ python }}
+    - libstdcxx-ng
+    #- numpy>=1.19.5
+    - numpy==1.19.2
+
+test:
+  imports:
+    - hnswlib
+  #source_files:
+  #  - python_bindings/tests/
+
+about:
+  home: hnsw2
+  license: Apache License 2.0
+  license_family: APACHE
+  summary: 'hnsw2'
+
+extra:
+  recipe-maintainers:
+    - arita37
