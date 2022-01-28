@@ -3,6 +3,7 @@ Header-only C++ HNSW implementation with python bindings. Paper code for the HNS
 
 **NEWS:**
 
+
 **Thanks to Louis Abraham ([@louisabraham](https://github.com/louisabraham)) hnswlib is now can be installed via pip!**
 
 Highlights:
