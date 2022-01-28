@@ -9,7 +9,7 @@ source:
 
   ### Ok works
   git_url: https://github.com/arita37/cat_hnswlib.git
-  git_rev: c83fd9250d7eba67d487b540cbb7881bec0fb250
+  # git_rev: c83fd9250d7eba67d487b540cbb7881bec0fb250
   
   ####### djoko branch
   # git_url: https://github.com/arita37/hnswcat.git
