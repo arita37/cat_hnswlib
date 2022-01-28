@@ -7,16 +7,15 @@ package:
 
 source:  
 
-  ### Ok works
+  ### knn_query_new version
   git_url: https://github.com/arita37/cat_hnswlib.git
-  git_rev: e54e865b246fb97a9a1b865308124e0b547a102c
+  git_rev: c83fd9250d7eba67d487b540cbb7881bec0fb250
   
-  ####### djoko branch
-  # git_url: https://github.com/arita37/hnswcat.git
-  # git_rev: 9257ce09b65b06062ee75b5d65432163708abbc6
+  ###Original : ok running
+  #git_url: https://github.com/arita37/cat_hnswlib.git
+  # git_rev: e54e865b246fb97a9a1b865308124e0b547a102c
+
   
-  # git_rev:  2d6cd7b74665971f4f5489557234e973fdc7c703
-  #### previous one
   
 #source:
 #  git_url: https://github.com/heal-research/operon
