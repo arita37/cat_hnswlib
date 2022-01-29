@@ -33,6 +33,7 @@ jobs:
           conda build -c conda-forge recipe
 
           #### Test
+          conda install  /github/home/miniconda/envs/test/conda-bld/linux-64/hnsw2-*.tar.bz2
           python test1.py
  
       - name: 'Upload Artifact'
