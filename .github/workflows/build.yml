@@ -32,7 +32,10 @@ jobs:
           cd build_hnsw
           conda build -c conda-forge recipe
 
-          # python build_hnsw/test1.py
+          #### Test
+          conda install  /github/home/miniconda/envs/test/conda-bld/linux-64/hnsw2-*.tar.bz2
+          conda update --all
+          python test1.py
  
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v2

@@ -1,3 +1,53 @@
+#### Task 2 :
+   Add internal mapping Index in binding.cpp
+
+
+   dictionnary :   HNSW Index 0....10000    ---> map to realid   
+        mapid = {   0 : 'myid01',  1:'myid02' , .... }
+
+         
+####  Current code is :       
+        idxallj, distance = p.knn_query_new(vecti, k=topk, conditions=filters)
+   
+        idxlist = idxallj[0]      
+        realid = [  maprealid[i] for i  in   idxallj   ]  #### Map into realid, in Python side.
+        idxall.append(realid)
+
+
+      
+####  New code   
+        mapid = {   0 : 'myid01',  1:'myid02' , .... }   #### Python dict
+        p.init_index(max_elements=num_elem, ef_construction=512, M=512,   realidmap =  mapid)
+
+
+        realidxj, distance = p.knn_query_new2(vecti, k=topk, conditions=filters)
+   
+        realid = realidallj[0]      
+        ### No need anymore:    realid = [  maprealid[i] for i  in   idxallj   ]  ,   
+        ### Mapping is already done in C++
+         
+        idxall.append(realid)
+
+
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+
+
+
 #### What the library does:
 
    store vector of float into internal Index   

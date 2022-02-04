@@ -2,9 +2,14 @@ import hnswlib
 import numpy as np
 import timeit
 
+def log(*s):
+    print(*s, flush=True)
+
+
 def test_query(vecti, topk=1, genreid=[10,20]):
     starttime = timeit.default_timer()
     idxall = []
+    log(p.knn_query)
     for gi in genreid:
         filters = [[(False, int(gi))]]
         idxallj, _ = p.knn_query(vecti, k=topk, conditions=filters)
@@ -17,6 +22,7 @@ def test_query(vecti, topk=1, genreid=[10,20]):
 def test_query_new(vecti, topk=1, genreid=[10,20]):
     starttime = timeit.default_timer()
     filters = []
+    log(p.knn_query_new)
     for gi in genreid:
         filters.append([[(False, int(gi))]])
     idxall, _ = p.knn_query_new(vecti, k=topk, conditions=filters)
