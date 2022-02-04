@@ -73,8 +73,9 @@ for i in range(r):
     elapsedtimes2.append(elapsed)
 
 
-for i in range(0,len(result2)):
-    assert result[i] == result2[i], 'not same'
+for i in range(0, 100):
+    if result[i] != result2[i]:
+        print('not same', i)
 
 
 meantime = np.mean(elapsedtimes2)
