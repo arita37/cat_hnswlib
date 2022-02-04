@@ -5,8 +5,6 @@
 #include "hnswlib/hnswlib.h"
 #include <thread>
 #include <atomic>
-#include <map>
-#include <string>
 
 namespace py = pybind11;
 
@@ -96,7 +94,7 @@ public:
         num_threads_default = std::thread::hardware_concurrency();
     }
 
-    void init_new_index(const size_t maxElements, const size_t M, const size_t efConstruction, const size_t random_seed, std::map<int, std::string> map_id) {
+    void init_new_index(const size_t maxElements, const size_t M, const size_t efConstruction, const size_t random_seed) {
         if (appr_alg) {
             throw new std::runtime_error("The index is already initiated.");
         }
@@ -104,7 +102,6 @@ public:
         appr_alg = new hnswlib::HierarchicalNSW<dist_t>(l2space, maxElements, M, efConstruction, random_seed);
         index_inited = true;
         ep_added = false;
-        mapid = map_id;
     }
 
     void set_ef(size_t ef) {
@@ -198,9 +195,10 @@ public:
                 size_t id = ids.size() ? ids.at(0) : (cur_l);
 				float *vector_data=(float *) items.data(0);
                                 std::vector<float> norm_array(dim);
-				if(normalize){
+				if(normalize){					
 					normalize_vector(vector_data, norm_array.data());					
 					vector_data = norm_array.data();
+					
 				}
 				appr_alg->addPoint((void *) vector_data, (size_t) id);
                 start = 1;
@@ -258,92 +256,6 @@ public:
     }
 
 //
-// New function returning array of realid (string) instead of index number (int)
-//
-    py::object knnQuery_return_numpy_new2(py::object input, size_t k = 1, int num_threads = -1, std::vector<hnswlib::condition_t> &conditions = {}) {
-        py::array_t < dist_t, py::array::c_style | py::array::forcecast > items(input);
-        auto buffer = items.request();
-
-        std::vector<std::vector<std::string>> data_numpy_l;
-        std::vector<std::vector<dist_t>> data_numpy_d;
-
-        size_t features; 
-
-        if (num_threads <= 0)
-            num_threads = num_threads_default;
-
-        {
-            py::gil_scoped_release l;
-
-            features = buffer.shape[1];
-
-            if ((int)conditions.size() <= num_threads*4){
-                num_threads=1;
-            }
-
-            // Prepare data_numpy, based on conditions number
-            data_numpy_l.resize(conditions.size());
-            data_numpy_d.resize(conditions.size());
-
-            if (normalize==false) {
-                //Parallel for conditions.size() number  USING the 1st vector ONLY  items.data(0)
-                ParallelFor(0, conditions.size(), num_threads, [&](size_t ncondition, size_t threadId) {
-                        //take search_condition from conditions[ncondition]
-                        hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions[ncondition]);
-                        std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
-                                (void *) items.data(0), k, search_condition);
-
-                        //push the result of searchKnn() to data_numpy_l,
-                        //data_numpy_d
-                        while(!result.empty()){
-                            auto result_tuple = result.top();
-                            data_numpy_d.at(ncondition).push_back(result_tuple.first);
-                            if (mapid.empty())
-                               data_numpy_l.at(ncondition).push_back(std::to_string(result_tuple.second));
-                            else
-                               data_numpy_l.at(ncondition).push_back(mapid[result_tuple.second]);
-                            result.pop();
-                        }
-                        std::reverse(data_numpy_d.at(ncondition).begin(),data_numpy_d.at(ncondition).end());
-                        std::reverse(data_numpy_l.at(ncondition).begin(),data_numpy_l.at(ncondition).end());
-                    }
-                );
-            }
-            else{
-                std::vector<float> norm_array(num_threads*features);
-                // Normalize vector, outside of parallel process, since it used the same input
-                // vector for all conditions  : using same vector items.data(0)
-                normalize_vector((float *) items.data(0), (norm_array.data()));
-
-                //Parallel for conditions.size() number
-                ParallelFor(0, conditions.size(), num_threads, [&](size_t ncondition, size_t threadId) {
-                        //take search_condition from conditions[ncondition]
-                        hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions[ncondition]);
-
-                        std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
-                                (void *) (norm_array.data()), k, search_condition);
-
-                        //push the result of searchKnn() to data_numpy_l,
-                        //data_numpy_d
-                        while(!result.empty()){
-                            auto result_tuple = result.top();
-                            data_numpy_d.at(ncondition).push_back(result_tuple.first);
-                            if (mapid.empty())
-                               data_numpy_l.at(ncondition).push_back(std::to_string(result_tuple.second));
-                            else
-                               data_numpy_l.at(ncondition).push_back(mapid[result_tuple.second]);
-                            result.pop();
-                        }
-                        std::reverse(data_numpy_d.at(ncondition).begin(),data_numpy_d.at(ncondition).end());
-                        std::reverse(data_numpy_l.at(ncondition).begin(),data_numpy_l.at(ncondition).end());
-                    }
-                );
-            }
-        }
-        return py::make_tuple(data_numpy_l, data_numpy_d);
-    }
-
-//
 // New function, knnQuery_return_numpy_new, with similar functionality as knnQuery_return_numy.
 // The different is, it has multi conditions in input parameter, and the function
 // will iterate over the conditions.
@@ -356,7 +268,7 @@ public:
         std::vector<std::vector<hnswlib::labeltype>> data_numpy_l;
         std::vector<std::vector<dist_t>> data_numpy_d;
 
-        size_t features;
+        size_t features; //, rows;
 
         if (num_threads <= 0)
             num_threads = num_threads_default;
@@ -552,6 +464,7 @@ public:
     std::string space_name;
     int dim;
 
+
     bool index_inited;
     bool ep_added;
     bool normalize;
@@ -559,7 +472,6 @@ public:
     hnswlib::labeltype cur_l;
     hnswlib::HierarchicalNSW<dist_t> *appr_alg;
     hnswlib::SpaceInterface<float> *l2space;
-    std::map<int, std::string> mapid;
 
     ~Index() {
         delete l2space;
@@ -575,11 +487,9 @@ PYBIND11_MODULE(hnswlib, m) {
         py::class_<Index<float>>(m, "Index")
         .def(py::init<const std::string &, const int>(), py::arg("space"), py::arg("dim"))
         .def("init_index", &Index<float>::init_new_index, py::arg("max_elements"), py::arg("M")=16,
-        py::arg("ef_construction")=200, py::arg("random_seed")=100,
-        py::arg("mapid")=std::map<int, std::string>())
+        py::arg("ef_construction")=200, py::arg("random_seed")=100)
         .def("knn_query", &Index<float>::knnQuery_return_numpy, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector< hnswlib::tagtype >>())
         .def("knn_query_new", &Index<float>::knnQuery_return_numpy_new, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector< hnswlib::tagtype >>>())
-        .def("knn_query_new2", &Index<float>::knnQuery_return_numpy_new2, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector< hnswlib::tagtype >>>())
         .def("add_items", &Index<float>::addItems, py::arg("data"), py::arg("ids") = py::none(), py::arg("num_threads")=-1)
         .def("get_items", &Index<float, float>::getDataReturnList, py::arg("ids") = py::none())
         .def("get_ids_list", &Index<float>::getIdsList)
