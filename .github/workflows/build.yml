@@ -36,7 +36,9 @@ jobs:
           conda install  /github/home/miniconda/envs/test/conda-bld/linux-64/hnsw2-*.tar.bz2
           conda update --all
           python test1.py
- 
+          python test_query_new2.py
+
+
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v2
         with:
