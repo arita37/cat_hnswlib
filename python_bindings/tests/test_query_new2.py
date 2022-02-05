@@ -9,9 +9,10 @@ def test_query_new(vecti, topk=1, genreid=[10,20]):
 
     idxallj, _ = p.knn_query_new(vecti, k=topk, conditions=filters)
     #print(idxallj)
-    realid = [mapid[i] for i in idxallj[0]]
+    for i in range(len(idxallj)):
+        realid = [mapid[x] for x in idxallj[i]]
+        idxall.append(realid)
 
-    idxall.append(realid)
     elapsedtime = timeit.default_timer() - starttime
     #print("Time elapsed = ", elapsedtime)
     return idxall, elapsedtime
@@ -21,6 +22,7 @@ def test_query_new2(vecti, topk=1, genreid=[10,20]):
     starttime = timeit.default_timer()
     filters = [[[(False,10)]], [[(False,20)]], [[(False,30)]], [[(False,40)]], [[(False,50)]]]
     idxall, _ = p.knn_query_new2(vecti, k=topk, conditions=filters)
+    print(idxall)
     elapsedtime = timeit.default_timer() - starttime
     #print("Time elapsed = ", elapsedtime)
     return idxall, elapsedtime
@@ -53,11 +55,11 @@ for i in range(dim):
 
 print("Query test ...")
 elapsedtimes = []
-r = 10
+r = 1
 k = 50
 for i in range(r):
     #print("new loop ", i)
-    result, elapsed = test_query_new2(vecti, topk=k, genreid=[10,20,30,40,50])
+    result2, elapsed = test_query_new2(vecti, topk=k, genreid=[10,20,30,40,50])
     elapsedtimes.append(elapsed)
 
 meantime = np.mean(elapsedtimes)
@@ -73,3 +75,9 @@ for i in range(r):
 meantime = np.mean(elapsedtimes)
 print("\nk = ",k, ", loop ", r, " times")
 print("New Elapsed time (meantime) = ", meantime)
+
+for i in range(len(result)):
+    for j in range(len(result[i])):
+        if result[i][j] != result2[i][j]:
+            print("not same")
+
