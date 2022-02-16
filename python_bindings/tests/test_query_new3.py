@@ -2,13 +2,12 @@ import hnswlib
 import numpy as np
 import timeit
 
-def test_query_new2(vecti, topk=1, genreid=[10,20]):
+def test_query_new2(vecti, topk=1, filarr=[]):
     starttime = timeit.default_timer()
-    filters = [[[(False,10)]], [[(False,20)]], [[(False,30)]], [[(False,40)]], [[(False,50)]]]
     idxall = []
 
     for i in range(len(vecti)):
-        idxallj, _ = p.knn_query_new2(vecti[i], k=topk, conditions=filters)
+        idxallj, _ = p.knn_query_new2(vecti[i], k=topk, conditions=filarr[i])
         idx = []
         for j in idxallj:
             idx += j
@@ -18,10 +17,9 @@ def test_query_new2(vecti, topk=1, genreid=[10,20]):
     return idxall, elapsedtime
 
 
-def test_query_new3(vecti, topk=1, genreid=[10,20]):
+def test_query_new3(vecti, topk=1, filarr=[]):
     starttime = timeit.default_timer()
-    filters = [[[(False,10)]], [[(False,20)]], [[(False,30)]], [[(False,40)]], [[(False,50)]]]
-    idxall, _ = p.knn_query_new3(vecti, k=topk, conditions=filters)
+    idxall, _ = p.knn_query_new3(vecti, k=topk, conditions=filarr)
 
     elapsedtime = timeit.default_timer() - starttime
     return idxall, elapsedtime
@@ -42,20 +40,25 @@ p.set_num_threads(4)
 
 p.add_items(data)
 
-p.add_tags(list(range(1,num_elem, 5)), 10)
-p.add_tags(list(range(2,num_elem, 5)), 20)
-p.add_tags(list(range(3,num_elem, 5)), 30)
-p.add_tags(list(range(4,num_elem, 5)), 40)
-p.add_tags(list(range(5,num_elem, 5)), 50)
+p.add_tags(list(range(1, num_elem, 5)), 10)
+p.add_tags(list(range(2, num_elem, 5)), 20)
+p.add_tags(list(range(3, num_elem, 5)), 30)
+p.add_tags(list(range(4, num_elem, 5)), 40)
+p.add_tags(list(range(5, num_elem, 5)), 50)
 
+#Create 1000 input vector
 vecti = np.float32(np.random.random((1000, 512)))
+
+#Create 1000 filters (append one filter 1000 times)
+filter = [[[(False,10)]], [[(False,20)]], [[(False,30)]], [[(False,40)]], [[(False,50)]]]
+filterarr = [filter for i in range(1000)]
 
 print("Query test ...")
 elapsedtimes = []
 r = 5
 k = 50
 for i in range(r):
-    result3, elapsed = test_query_new3(vecti, topk=k, genreid=[10,20,30,40,50])
+    result3, elapsed = test_query_new3(vecti, topk=k, filarr=filterarr)
     elapsedtimes.append(elapsed)
 
 meantime = np.mean(elapsedtimes)
@@ -64,7 +67,7 @@ print("New3 Elapsed time (meantime) = ", meantime)
 
 elapsedtimes = []
 for i in range(r):
-    result2, elapsed = test_query_new2(vecti, topk=k, genreid=[10,20,30,40,50])
+    result2, elapsed = test_query_new2(vecti, topk=k, filarr=filterarr)
     elapsedtimes.append(elapsed)
 
 meantime = np.mean(elapsedtimes)
