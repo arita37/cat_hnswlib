@@ -1,27 +1,24 @@
 
 ```
 
-This version is working:
+1) Need to change the git commit in 
 
-    package                    |            build
-    ---------------------------|-----------------
-    numpy-1.16.6               |   py37h2d18471_3          50 KB
-    numpy-base-1.16.6          |   py37hdc34a94_3         3.5 MB
-    ------------------------------------------------------------
-                                           Total:         3.6 MB
+     build_hnsw/recipe/meta.yaml
 
-The following NEW packages will be INSTALLED:
+     Main branch is djoko
 
-  blas               pkgs/main/linux-64::blas-1.0-mkl
-  intel-openmp       pkgs/main/linux-64::intel-openmp-2021.4.0-h06a4308_3561
-  libgfortran-ng     pkgs/main/linux-64::libgfortran-ng-7.3.0-hdf63c60_0
-  mkl                pkgs/main/linux-64::mkl-2021.4.0-h06a4308_640
-  mkl-service        pkgs/main/linux-64::mkl-service-2.4.0-py37h7f8727e_0
-  mkl_fft            pkgs/main/linux-64::mkl_fft-1.3.1-py37hd3c417c_0
-  mkl_random         pkgs/main/linux-64::mkl_random-1.2.2-py37h51133e4_0
-  numpy              pkgs/main/linux-64::numpy-1.16.6-py37h2d18471_3
-  numpy-base         pkgs/main/linux-64::numpy-base-1.16.6-py37hdc34a94_3
-  six                pkgs/main/noarch::six-1.16.0-pyhd3eb1b0_0
+
+2) python tests are located in 
+     /build_hnsw/
+
+
+
+
+
+
+
+
+
 
 
 
