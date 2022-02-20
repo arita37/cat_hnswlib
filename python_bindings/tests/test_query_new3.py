@@ -26,7 +26,7 @@ def test_query_new3(vecti, topk=1, filarr=[]):
 
 print("Load data ...")
 dim = 512
-num_elem = 10000
+num_elem = 100
 
 data = np.float32(np.random.random((num_elem, dim)))
 p = hnswlib.Index(space='l2', dim=dim)
@@ -47,11 +47,11 @@ p.add_tags(list(range(4, num_elem, 5)), 40)
 p.add_tags(list(range(5, num_elem, 5)), 50)
 
 #Create 1000 input vector
-vecti = np.float32(np.random.random((1000, 512)))
+vecti = np.float32(np.random.random((73, 512)))
 
 #Create 1000 filters (append one filter 1000 times)
 filter = [[[(False,10)]], [[(False,20)]], [[(False,30)]], [[(False,40)]], [[(False,50)]]]
-filterarr = [filter for i in range(1000)]
+filterarr = [filter for i in range(73)]
 
 print("Query test ...")
 elapsedtimes = []
