@@ -29,7 +29,7 @@ def test_query_new2(vecti, topk=1, genreid=[10,20]):
 
 print("Load data ...")
 dim = 512
-num_elem = 10000
+num_elem = 47
 
 data = np.float32(np.random.random((num_elem, dim)))
 p = hnswlib.Index(space='l2', dim=dim)
