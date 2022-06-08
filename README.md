@@ -1,13 +1,13 @@
-# Hnswlib - fast approximate nearest neighbor search
-Header-only C++ HNSW implementation with python bindings. Paper code for the HNSW 200M SIFT experiment
+# catannlib - fast approximate nearest neighbor search
+Header-only C++ catann implementation with python bindings. Paper code for the catann 200M SIFT experiment
 
 **NEWS:**
 
-**Thanks to Louis Abraham ([@louisabraham](https://github.com/louisabraham)) hnswlib is now can be installed via pip!**
+**Thanks to Louis Abraham ([@louisabraham](https://github.com/louisabraham)) catannlib is now can be installed via pip!**
 
 Highlights:
 1) Lightweight, header-only, no dependencies other than C++ 11.
-2) Interfaces for C++, python and R (https://github.com/jlmelville/rcpphnsw).
+2) Interfaces for C++, python and R (https://github.com/jlmelville/rcppcatann).
 3) Has full support for incremental index construction. Has support for element deletions 
 (currently, without actual freeing of the memory).
 4) Can work with custom user defined distances (C++).
@@ -31,7 +31,7 @@ Note that inner product is not an actual metric. An element can be closer to som
 For other spaces use the nmslib library https://github.com/nmslib/nmslib. 
 
 #### Short API description
-* `hnswlib.Index(space, dim)` creates a non-initialized index an HNSW in space `space` with integer dimension `dim`.
+* `catannlib.Index(space, dim)` creates a non-initialized index an catann in space `space` with integer dimension `dim`.
 
 Index methods:
 * `init_index(max_elements, ef_construction = 200, M = 16, random_seed = 100)` initializes the index from with no elements. 
@@ -77,7 +77,7 @@ Index methods:
   
 #### Python bindings examples
 ```python
-import hnswlib
+import catannlib
 import numpy as np
 
 dim = 128
@@ -88,7 +88,7 @@ data = np.float32(np.random.random((num_elements, dim)))
 data_labels = np.arange(num_elements)
 
 # Declaring index
-p = hnswlib.Index(space = 'l2', dim = dim) # possible options are l2, cosine or ip
+p = catannlib.Index(space = 'l2', dim = dim) # possible options are l2, cosine or ip
 
 # Initing index - the maximum number of elements should be known beforehand
 p.init_index(max_elements = num_elements, ef_construction = 200, M = 16)
@@ -105,7 +105,7 @@ labels, distances = p.knn_query(data, k = 1)
 
 An example with updates after serialization/deserialization:
 ```python
-import hnswlib
+import catannlib
 import numpy as np
 
 dim = 16
@@ -119,7 +119,7 @@ data1 = data[:num_elements // 2]
 data2 = data[num_elements // 2:]
 
 # Declaring index
-p = hnswlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
+p = catannlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
 
 # Initing index
 # max_elements - the maximum number of elements (capacity). Will throw an exception if exceeded
@@ -156,7 +156,7 @@ p.save_index("first_half.bin")
 del p
 
 # Reiniting, loading the index
-p = hnswlib.Index(space='l2', dim=dim)  # the space can be changed - keeps the data, alters the distance function.
+p = catannlib.Index(space='l2', dim=dim)  # the space can be changed - keeps the data, alters the distance function.
 
 print("\nLoading index from 'first_half.bin'\n")
 
@@ -184,22 +184,22 @@ python3 setup.py install
 ```
 
 or you can install via pip:
-`pip install hnswlib`
+`pip install catannlib`
 
 ### Other implementations
 * Non-metric space library (nmslib) - main library(python, C++), supports exotic distances: https://github.com/nmslib/nmslib
-* Faiss libary by facebook, uses own HNSW  implementation for coarse quantization (python, C++):
+* Faiss libary by facebook, uses own catann  implementation for coarse quantization (python, C++):
 https://github.com/facebookresearch/faiss
 * Code for the paper 
 ["Revisiting the Inverted Indices for Billion-Scale Approximate Nearest Neighbors"](https://arxiv.org/abs/1802.02422) 
 (current state-of-the-art in compressed indexes, C++):
-https://github.com/dbaranchuk/ivf-hnsw
+https://github.com/dbaranchuk/ivf-catann
 * TOROS N2 (python, C++): https://github.com/kakao/n2 
-* Online HNSW (C++): https://github.com/andrusha97/online-hnsw) 
-* Go implementation: https://github.com/Bithack/go-hnsw
+* Online catann (C++): https://github.com/andrusha97/online-catann) 
+* Go implementation: https://github.com/Bithack/go-catann
 * Python implementation (as a part of the clustering code by by Matteo Dell'Amico): https://github.com/matteodellamico/flexible-clustering
-* Java implementation: https://github.com/jelmerk/hnswlib
-* .Net implementation:  https://github.com/microsoft/HNSW.Net
+* Java implementation: https://github.com/jelmerk/catannlib
+* .Net implementation:  https://github.com/microsoft/catann.Net
 
 ### Contributing to the repository
 Contributions are highly welcome!
@@ -224,9 +224,9 @@ To run the test on 200M SIFT subset:
 
 The size of the bigann subset (in millions) is controlled by the variable **subset_size_milllions** hardcoded in **sift_1b.cpp**.
 
-### HNSW example demos
+### catann example demos
 
-- Visual search engine for 1M amazon products (MXNet + HNSW): [website](https://thomasdelteil.github.io/VisualSearch_MXNet/), [code](https://github.com/ThomasDelteil/VisualSearch_MXNet), demo by [@ThomasDelteil](https://github.com/ThomasDelteil)
+- Visual search engine for 1M amazon products (MXNet + catann): [website](https://thomasdelteil.github.io/VisualSearch_MXNet/), [code](https://github.com/ThomasDelteil/VisualSearch_MXNet), demo by [@ThomasDelteil](https://github.com/ThomasDelteil)
 
 ### References
 

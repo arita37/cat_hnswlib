@@ -2,13 +2,13 @@
 #include <fstream>
 #include <queue>
 #include <chrono>
-#include "hnswlib/hnswlib.h"
+#include "catannlib/catannlib.h"
 
 
 #include <unordered_set>
 
 using namespace std;
-using namespace hnswlib;
+using namespace catannlib;
 
 /*
 template <typename T>
@@ -186,12 +186,12 @@ void sift_test() {
 //#define LOAD_I
 #ifdef LOAD_I
 
-    HierarchicalNSW<float> appr_alg(&l2space, "hnswlib_sift",false);
-    //HierarchicalNSW<float> appr_alg(&l2space, "D:/stuff/hnsw_lib/nmslib/similarity_search/release/temp",true);
-    //HierarchicalNSW<float> appr_alg(&l2space, "/mnt/d/stuff/hnsw_lib/nmslib/similarity_search/release/temp", true);
+    HierarchicalNSW<float> appr_alg(&l2space, "catannlib_sift",false);
+    //HierarchicalNSW<float> appr_alg(&l2space, "D:/stuff/catann_lib/nmslib/similarity_search/release/temp",true);
+    //HierarchicalNSW<float> appr_alg(&l2space, "/mnt/d/stuff/catann_lib/nmslib/similarity_search/release/temp", true);
 
-    //appr_alg_saved.saveIndex("d:\\hnsw-index.bin");
-    //appr_alg_saved.loadIndex("d:\\hnsw-index2.bin", &l2space);
+    //appr_alg_saved.saveIndex("d:\\catann-index.bin");
+    //appr_alg_saved.loadIndex("d:\\catann-index2.bin", &l2space);
 #else
     //return;
     //for (int u = 0; u < 10; u++) {
@@ -217,9 +217,9 @@ void sift_test() {
     virtualMemUsedByMe = pmc.WorkingSetSize;
     cout << virtualMemUsedByMe / 1000 / 1000 << "\n";*/
     cout << "Index built, time=" << stopwb.getElapsedTimeMicro() * 1e-6 << "\n";
-    //appr_alg.saveIndex("hnswlib_sift");
+    //appr_alg.saveIndex("catannlib_sift");
 
-    //appr_alg.saveIndex("d:\\hnsw-index2.bin");
+    //appr_alg.saveIndex("d:\\catann-index2.bin");
 
 #endif
 

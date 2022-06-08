@@ -1,4 +1,4 @@
-name: zbuild_hnsw
+name: zbuild_catann
 
 on:
   push:
@@ -29,11 +29,11 @@ jobs:
           conda activate test
           
           #### Build  ##############################
-          cd build_hnsw
+          cd build_catann
           conda build -c conda-forge recipe
 
           #### Test
-          conda install  /github/home/miniconda/envs/test/conda-bld/linux-64/hnsw2-*.tar.bz2
+          conda install  /github/home/miniconda/envs/test/conda-bld/linux-64/catann2-*.tar.bz2
           conda update --all
           python test1.py
           python test_query_new2.py
@@ -44,5 +44,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: upload files
-          path: /github/home/miniconda/envs/test/conda-bld/linux-64/hnsw2-*.tar.bz2
+          path: /github/home/miniconda/envs/test/conda-bld/linux-64/catann2-*.tar.bz2
           retention-days: 300

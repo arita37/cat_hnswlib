@@ -1,5 +1,5 @@
 print('start')
-import hnswlib
+import catannlib
 import numpy as np
 import pickle
 
@@ -11,7 +11,7 @@ data = np.float32(np.random.random((num_elements, dim)))
 ids = np.arange(num_elements)
 
 # Declaring index
-p = hnswlib.Index(space = 'l2', dim = dim) # possible options are l2, cosine or ip
+p = catannlib.Index(space = 'l2', dim = dim) # possible options are l2, cosine or ip
 print(p)
 
 # Initializing index - the maximum number of elements should be known beforehand

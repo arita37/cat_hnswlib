@@ -2,7 +2,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
-#include "hnswlib/hnswlib.h"
+#include "catannlib/catannlib.h"
 #include <thread>
 #include <atomic>
 
@@ -78,13 +78,13 @@ public:
             space_name(space_name), dim(dim) {
         normalize=false;
         if(space_name=="l2") {
-            l2space = new hnswlib::L2Space(dim);
+            l2space = new catannlib::L2Space(dim);
         }
         else if(space_name=="ip") {
-            l2space = new hnswlib::InnerProductSpace(dim);
+            l2space = new catannlib::InnerProductSpace(dim);
         }
         else if(space_name=="cosine") {
-            l2space = new hnswlib::InnerProductSpace(dim);
+            l2space = new catannlib::InnerProductSpace(dim);
             normalize=true;
         }
         appr_alg = NULL;
@@ -98,7 +98,7 @@ public:
             throw new std::runtime_error("The index is already initiated.");
         }
         cur_l = 0;
-        appr_alg = new hnswlib::HierarchicalNSW<dist_t>(l2space, maxElements, M, efConstruction, random_seed);
+        appr_alg = new catannlib::HierarchicalNSW<dist_t>(l2space, maxElements, M, efConstruction, random_seed);
         index_inited = true;
         ep_added = false;
     }
@@ -128,7 +128,7 @@ public:
             std::cerr<<"Warning: Calling load_index for an already inited index. Old index is being deallocated.";
             delete appr_alg;
         }
-        appr_alg = new hnswlib::HierarchicalNSW<dist_t>(l2space, path_to_index, false, max_elements);
+        appr_alg = new catannlib::HierarchicalNSW<dist_t>(l2space, path_to_index, false, max_elements);
 		cur_l = appr_alg->cur_element_count;
     }
 	void normalize_vector(float *data, float *norm_array){
@@ -254,19 +254,19 @@ public:
         return ids;
     }
 
-    py::object knnQuery_return_numpy(py::object input, size_t k = 1, int num_threads = -1, hnswlib::condition_t &conditions = {}) {
+    py::object knnQuery_return_numpy(py::object input, size_t k = 1, int num_threads = -1, catannlib::condition_t &conditions = {}) {
 
         py::array_t < dist_t, py::array::c_style | py::array::forcecast > items(input);
         auto buffer = items.request();
-        // hnswlib::labeltype *data_numpy_l;
+        // catannlib::labeltype *data_numpy_l;
         // dist_t *data_numpy_d;
 
-        std::vector<std::vector<hnswlib::labeltype>> data_numpy_l;
+        std::vector<std::vector<catannlib::labeltype>> data_numpy_l;
         std::vector<std::vector<dist_t>> data_numpy_d;
 
         size_t rows, features;
 
-        hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions);
+        catannlib::SearchCondition search_condition = catannlib::SearchCondition(conditions);
 
         if (num_threads <= 0)
             num_threads = num_threads_default;
@@ -295,12 +295,12 @@ public:
             data_numpy_l.resize(rows);
             data_numpy_d.resize(rows);
 
-            // data_numpy_l =  new hnswlib::labeltype[rows * k];
+            // data_numpy_l =  new catannlib::labeltype[rows * k];
             // data_numpy_d = new dist_t[rows * k];
 
             if(normalize==false) {
                 ParallelFor(0, rows, num_threads, [&](size_t row, size_t threadId) {
-                        std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                        std::priority_queue<std::pair<dist_t, catannlib::labeltype >> result = appr_alg->searchKnn(
                                 (void *) items.data(row), k, search_condition);
                         while(!result.empty()){
                             auto result_tuple = result.top();
@@ -321,7 +321,7 @@ public:
                         size_t start_idx = threadId * dim;
                         normalize_vector((float *) items.data(row), (norm_array.data()+start_idx));
 
-                        std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                        std::priority_queue<std::pair<dist_t, catannlib::labeltype >> result = appr_alg->searchKnn(
                                 (void *) (norm_array.data()+start_idx), k, search_condition);
                         while(!result.empty()){
                             auto result_tuple = result.top();
@@ -356,7 +356,7 @@ public:
         appr_alg->indexTags(tags, m);
     }
 
-    const hnswlib::tagcontainer getTags(size_t label) {
+    const catannlib::tagcontainer getTags(size_t label) {
         return *appr_alg->getTagsByLabel(label);
     }
 
@@ -384,9 +384,9 @@ public:
     bool ep_added;
     bool normalize;
     int num_threads_default;
-    hnswlib::labeltype cur_l;
-    hnswlib::HierarchicalNSW<dist_t> *appr_alg;
-    hnswlib::SpaceInterface<float> *l2space;
+    catannlib::labeltype cur_l;
+    catannlib::HierarchicalNSW<dist_t> *appr_alg;
+    catannlib::SpaceInterface<float> *l2space;
 
     ~Index() {
         delete l2space;
@@ -395,14 +395,14 @@ public:
     }
 };
 
-PYBIND11_PLUGIN(hnswlib) {
-        py::module m("hnswlib");
+PYBIND11_PLUGIN(catannlib) {
+        py::module m("catannlib");
 
         py::class_<Index<float>>(m, "Index")
         .def(py::init<const std::string &, const int>(), py::arg("space"), py::arg("dim"))
         .def("init_index", &Index<float>::init_new_index, py::arg("max_elements"), py::arg("M")=16,
         py::arg("ef_construction")=200, py::arg("random_seed")=100)
-        .def("knn_query", &Index<float>::knnQuery_return_numpy, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector< hnswlib::tagtype >>())
+        .def("knn_query", &Index<float>::knnQuery_return_numpy, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector< catannlib::tagtype >>())
         .def("add_items", &Index<float>::addItems, py::arg("data"), py::arg("ids") = py::none(), py::arg("num_threads")=-1)
         .def("get_items", &Index<float, float>::getDataReturnList, py::arg("ids") = py::none())
         .def("get_ids_list", &Index<float>::getIdsList)
@@ -423,7 +423,7 @@ PYBIND11_PLUGIN(hnswlib) {
         .def("get_current_count", &Index<float>::getCurrentCount)
         .def("__repr__",
         [](const Index<float> &a) {
-            return "<HNSW-lib index>";
+            return "<catann-lib index>";
         }
         );
         return m.ptr();

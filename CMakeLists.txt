@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (hnsw_lib)
+project (catann_lib)
 
 include_directories("${PROJECT_BINARY_DIR}")
 

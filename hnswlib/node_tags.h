@@ -8,7 +8,7 @@
 #include <vector>
 #include <set>
 
-namespace hnswlib {
+namespace catannlib {
 
     class TagsStore : public ElementContainer<tagcontainer> {
     public:

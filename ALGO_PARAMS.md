@@ -1,4 +1,4 @@
-# HNSW algorithm parameters
+# catann algorithm parameters
 
 ## Search parameters:
 * ```ef``` - the size of the dynamic list for the nearest neighbors (used during the search). Higher ```ef```

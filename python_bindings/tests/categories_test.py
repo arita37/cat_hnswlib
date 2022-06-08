@@ -3,7 +3,7 @@ import unittest
 
 class RandomSelfTestCase(unittest.TestCase):
     def testRandomSelf(self):
-        import hnswlib
+        import catannlib
         import numpy as np
 
         dim = 16
@@ -13,7 +13,7 @@ class RandomSelfTestCase(unittest.TestCase):
         data = np.float32(np.random.random((num_elements, dim)))
 
         # Declaring index
-        p = hnswlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
+        p = catannlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
 
         # Initing index
         # max_elements - the maximum number of elements, should be known beforehand
@@ -68,7 +68,7 @@ class RandomSelfTestCase(unittest.TestCase):
         del p
 
         # Reiniting, loading the index
-        p = hnswlib.Index(space='l2', dim=dim)  # you can change the sa
+        p = catannlib.Index(space='l2', dim=dim)  # you can change the sa
 
         print("\nLoading index from 'first_half.bin'\n")
         p.load_index("first_half.bin")

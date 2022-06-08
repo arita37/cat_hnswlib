@@ -1,7 +1,7 @@
 import numpy as np
 import tqdm
 import geohash
-import hnswlib
+import catannlib
 import random
 import sys
 from collections import defaultdict
@@ -49,14 +49,14 @@ if __name__ == "__main__":
     max_precision = 6  # Minimal searchable precision. Precision of 6 is ~ 0.61 km 
     # https://en.wikipedia.org/wiki/Geohash#Number_of_geohash_characters_and_precision_in_km
     
-    hnsw = hnswlib.Index(space='cosine', dim=dim)
-    hnsw.init_index(max_elements = elements, M = 16, random_seed=45)
-    hnsw.set_num_threads(2)
+    catann = catannlib.Index(space='cosine', dim=dim)
+    catann.init_index(max_elements = elements, M = 16, random_seed=45)
+    catann.set_num_threads(2)
 
     # Generate random vectors and geo points
     points, geo_points = get_random_data(elements, dim, from_lat, to_lat, from_lon, to_lon)
 
-    hnsw.add_items(points)
+    catann.add_items(points)
 
     tags_to_index = defaultdict(int)
     tags_to_ids = defaultdict(list)
@@ -75,21 +75,21 @@ if __name__ == "__main__":
         # Assign geotags to points
         for tag in tags:
             tags_to_ids[tag].append(idx)
-            hnsw.add_tags([idx], geohash2int(tag))
+            catann.add_tags([idx], geohash2int(tag))
 
     # Additionally index points inside small regions 
     for tag in tqdm.tqdm(tags_to_index):
         # This will create additional links in a graph for each geohash region.
         # So search should work on nodes inside this region only.
-        hnsw.index_tagged(geohash2int(tag))
+        catann.index_tagged(geohash2int(tag))
         # With M=16 additional indexing is only required for regions containing less than ~5% of all points
-        # Additional info here: https://comprehension.ml/posts/categorical-hnsw/
+        # Additional info here: https://comprehension.ml/posts/categorical-catann/
 
     for tag in tqdm.tqdm(tags_to_index):
         # This code will also create additional connections between points in neighbor regions.
         # So search in multiple neighbor regions will also work
         neighbors = [geohash2int(ntag) for ntag in geohash.neighbors(tag) if ntag in tags_to_index]
-        hnsw.index_cross_tagged(neighbors)
+        catann.index_cross_tagged(neighbors)
 
     # Performing query
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     # [[(False, hash1), (False, hash2), ..., (False, hashN)]]
     condition = [[(False, target_tag)]]
 
-    found, dist = hnsw.knn_query(target_query, k=3, conditions=condition)
+    found, dist = catann.knn_query(target_query, k=3, conditions=condition)
     
     print(found, dist)
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "hnswlib.h"
+#include "catannlib.h"
 
-namespace hnswlib {
+namespace catannlib {
 
     static float
     InnerProduct(const void *pVect1, const void *pVect2, const void *qty_ptr) {

@@ -47,33 +47,33 @@ def get_top_fount(true_labels, found_labels):
 class ConditionalSeachTestCase(unittest.TestCase):
 
     def test_complex_condition(self):
-        import hnswlib        
+        import catannlib        
         dim = 50
         elements = 10_000
 
-        hnsw = hnswlib.Index(space='cosine', dim=dim)
-        hnsw.init_index(max_elements = elements, ef_construction = 10, M = 16, random_seed=45)
-        hnsw.set_num_threads(1)
+        catann = catannlib.Index(space='cosine', dim=dim)
+        catann.init_index(max_elements = elements, ef_construction = 10, M = 16, random_seed=45)
+        catann.set_num_threads(1)
 
         tags, mask, condition = get_constraints(elements, 100, [66, 45, 21, 55, 12, 99, 0, 4, 83])
         points = np.random.rand(elements, dim)
-        hnsw.add_items(points)
+        catann.add_items(points)
         for tag, ids in tqdm.tqdm(tags.items()):
-            hnsw.add_tags(ids, tag)
-            hnsw.index_tagged(tag)
+            catann.add_tags(ids, tag)
+            catann.index_tagged(tag)
         
-        hnsw.save_index('tmp_index.hnsw')
+        catann.save_index('tmp_index.catann')
 
-        hnsw2 = hnswlib.Index(space='cosine', dim=dim)
-        hnsw2.load_index('tmp_index.hnsw')
+        catann2 = catannlib.Index(space='cosine', dim=dim)
+        catann2.load_index('tmp_index.catann')
         
         target = get_random_vector(dim)
 
-        found, _ = hnsw2.knn_query(target, k=10, conditions=condition)
+        found, _ = catann2.knn_query(target, k=10, conditions=condition)
 
 
     def test_random_subsample(self):
-        import hnswlib        
+        import catannlib        
         dim = 50
         elements = 10_000
         attempts = 100
@@ -82,21 +82,21 @@ class ConditionalSeachTestCase(unittest.TestCase):
 
         tags, mask, condition = get_constraints(elements, 100, [66])
 
-        hnsw = hnswlib.Index(space='cosine', dim=dim)
-        hnsw.init_index(max_elements = elements, ef_construction = 10, M = 16, random_seed=45)
-        hnsw.set_num_threads(1)
+        catann = catannlib.Index(space='cosine', dim=dim)
+        catann.init_index(max_elements = elements, ef_construction = 10, M = 16, random_seed=45)
+        catann.set_num_threads(1)
 
-        hnsw.add_items(points)
+        catann.add_items(points)
 
         for tag, ids in tqdm.tqdm(tags.items()):
-            hnsw.add_tags(ids, tag)
-            hnsw.index_tagged(tag)
+            catann.add_tags(ids, tag)
+            catann.index_tagged(tag)
 
         top_hits = []
         for _ in range(attempts):
             target = get_random_vector(dim)
             true_closest = get_closest_brut(target, points, mask)
-            found, _ = hnsw.knn_query(target, k=10, conditions=condition)
+            found, _ = catann.knn_query(target, k=10, conditions=condition)
             top_found = get_top_fount(true_closest, found[0])
             top_hit = top_found[0]
             top_hits.append(top_hit)

@@ -1,4 +1,4 @@
-import hnswlib
+import catannlib
 import numpy as np
 import threading
 import pickle
@@ -6,7 +6,7 @@ import pickle
 
 class Index():
     def __init__(self, space, dim):
-        self.index = hnswlib.Index(space, dim)
+        self.index = catannlib.Index(space, dim)
         self.lock = threading.Lock()
         self.dict_labels = {}
         self.cur_ind = 0

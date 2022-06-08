@@ -1,4 +1,4 @@
-import hnswlib
+import catannlib
 import numpy as np
 import timeit
 
@@ -32,7 +32,7 @@ dim = 512
 num_elem = 10000
 
 data = np.float32(np.random.random((num_elem, dim)))
-p = hnswlib.Index(space='l2', dim=dim)
+p = catannlib.Index(space='l2', dim=dim)
 
 mapid = {}
 for i in range(num_elem):

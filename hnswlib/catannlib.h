@@ -34,7 +34,7 @@
 #include <algorithm>
 #include <string.h>
 
-namespace hnswlib {
+namespace catannlib {
     
     template <typename T>
     class pairGreater {
@@ -76,4 +76,4 @@ namespace hnswlib {
 
 #include "space_l2.h"
 #include "space_ip.h"
-#include "hnswalg.h"
+#include "catannalg.h"

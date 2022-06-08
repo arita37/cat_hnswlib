@@ -1,4 +1,4 @@
-{% set name = "hnsw2" %}
+{% set name = "catann2" %}
 {% set version = "0.0.1" %}
 
 package:
@@ -8,12 +8,12 @@ package:
 source:  
 
   ### knn_query_new version
-  git_url: https://github.com/arita37/cat_hnswlib.git
+  git_url: https://github.com/arita37/cat_catannlib.git
   # git_rev: c83fd9250d7eba67d487b540cbb7881bec0fb250   ### version 1
   git_rev: 389629c8abae8308335bf42664ecbc726c743aff     ### Version 3 new-query3
   
   ###Original : ok running
-  #git_url: https://github.com/arita37/cat_hnswlib.git
+  #git_url: https://github.com/arita37/cat_catannlib.git
   # git_rev: e54e865b246fb97a9a1b865308124e0b547a102c
 
   
@@ -52,15 +52,15 @@ requirements:
 
 test:
   imports:
-    - hnswlib
+    - catannlib
   #source_files:
   #  - python_bindings/tests/
 
 about:
-  home: hnsw2
+  home: catann2
   license: Apache License 2.0
   license_family: APACHE
-  summary: 'hnsw2'
+  summary: 'catann2'
 
 extra:
   recipe-maintainers:

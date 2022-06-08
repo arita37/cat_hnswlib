@@ -14,7 +14,7 @@ extra_objects = []
 
 ext_modules = [
     Extension(
-        'hnswlib',
+        'catannlib',
         source_files,
         # include_dirs=[os.path.join(libdir, "include")],
         libraries=libraries,
@@ -102,12 +102,12 @@ class BuildExt(build_ext):
 
 
 setup(
-    name='hnswcat',
+    name='catanncat',
     version=__version__,
-    description='hnswlib with categorical filters',
+    description='catannlib with categorical filters',
     author='nono',
     url='',
-    long_description="""hnsw""",
+    long_description="""catann""",
     ext_modules=ext_modules,
     install_requires=['pybind11>=2.0', 'numpy'],
     setup_requires=['pybind11>=2.0', 'numpy'],

@@ -2,13 +2,13 @@
 #include <fstream>
 #include <queue>
 #include <chrono>
-#include "hnswlib/hnswlib.h"
+#include "catannlib/catannlib.h"
 
 
 #include <unordered_set>
 
 using namespace std;
-using namespace hnswlib;
+using namespace catannlib;
 
 class StopW {
     std::chrono::steady_clock::time_point time_begin;

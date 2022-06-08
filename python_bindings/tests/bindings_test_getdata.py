@@ -4,7 +4,7 @@ import unittest
 class RandomSelfTestCase(unittest.TestCase):
     def testGettingItems(self):
         print("\n**** Getting the data by label test ****\n")
-        import hnswlib
+        import catannlib
         import numpy as np
 
         dim = 16
@@ -15,7 +15,7 @@ class RandomSelfTestCase(unittest.TestCase):
         labels = np.arange(0, num_elements)
 
         # Declaring index
-        p = hnswlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
+        p = catannlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
 
         # Initing index
         # max_elements - the maximum number of elements, should be known beforehand

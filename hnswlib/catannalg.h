@@ -1,7 +1,7 @@
 #pragma once
 
 #include "visited_list_pool.h"
-#include "hnswlib.h"
+#include "catannlib.h"
 #include "node_tags.h"
 #include "graph_layer.h"
 #include <random>
@@ -13,7 +13,7 @@
 #include <fstream>
 
 
-namespace hnswlib {
+namespace catannlib {
     typedef unsigned int linklistsizeint;
 
     template<typename dist_t>
@@ -711,7 +711,7 @@ namespace hnswlib {
         void indexTags(std::vector<tagtype> &indexing_tags, size_t m = 0) {
             if (m == 0) m = M_;
 
-            HierarchicalNSW *temp_hnsw = new HierarchicalNSW(s_, max_elements_, m, ef_construction_, random_seed_, data_level0_memory_);
+            HierarchicalNSW *temp_catann = new HierarchicalNSW(s_, max_elements_, m, ef_construction_, random_seed_, data_level0_memory_);
 
             std::unordered_set<tableint> indexed_points;
             for(tagtype tag : indexing_tags) {
@@ -722,15 +722,15 @@ namespace hnswlib {
                 for(tableint idx : tag_points->second){
                     if( indexed_points.find(idx) != indexed_points.end()){
                         indexed_points.insert(idx);
-                        temp_hnsw->linkNewPoint(idx, get_node_level(idx));
+                        temp_catann->linkNewPoint(idx, get_node_level(idx));
                     }
                 }
             }
 
-            layer0.mergeOther(temp_hnsw->layer0);
-            layers.mergeOther(temp_hnsw->layers);
+            layer0.mergeOther(temp_catann->layer0);
+            layers.mergeOther(temp_catann->layers);
 
-            delete temp_hnsw;
+            delete temp_catann;
         }
 
         /**
@@ -752,17 +752,17 @@ namespace hnswlib {
             // Create a new Index with same data, but empty links
             if (m == 0) m = M_;
 
-            HierarchicalNSW *temp_hnsw = new HierarchicalNSW(s_, max_elements_, m, ef_construction_, random_seed_, data_level0_memory_);
+            HierarchicalNSW *temp_catann = new HierarchicalNSW(s_, max_elements_, m, ef_construction_, random_seed_, data_level0_memory_);
 
             for(tableint idx : ids)
-                temp_hnsw->linkNewPoint(idx, get_node_level(idx));
+                temp_catann->linkNewPoint(idx, get_node_level(idx));
             
-            layer0.mergeOther(temp_hnsw->layer0);
-            layers.mergeOther(temp_hnsw->layers);
+            layer0.mergeOther(temp_catann->layer0);
+            layers.mergeOther(temp_catann->layers);
 
-            tableint entrypoint = temp_hnsw->enterpoint_node_;
+            tableint entrypoint = temp_catann->enterpoint_node_;
 
-            delete temp_hnsw;
+            delete temp_catann;
 
             return entrypoint;
         }

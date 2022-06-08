@@ -2,7 +2,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
-#include "hnswlib/hnswlib.h"
+#include "catannlib/catannlib.h"
 #include <thread>
 #include <atomic>
 #include <map>
@@ -78,16 +78,16 @@ class Index {
 public:
     Index(const std::string &space_name, const int dim) :
             space_name(space_name), dim(dim) {
-        std::cerr<<"my hnswlib dev module"<<std::endl;
+        std::cerr<<"my catannlib dev module"<<std::endl;
         normalize=false;
         if(space_name=="l2") {
-            l2space = new hnswlib::L2Space(dim);
+            l2space = new catannlib::L2Space(dim);
         }
         else if(space_name=="ip") {
-            l2space = new hnswlib::InnerProductSpace(dim);
+            l2space = new catannlib::InnerProductSpace(dim);
         }
         else if(space_name=="cosine") {
-            l2space = new hnswlib::InnerProductSpace(dim);
+            l2space = new catannlib::InnerProductSpace(dim);
             normalize=true;
         }
         appr_alg = NULL;
@@ -101,7 +101,7 @@ public:
             throw new std::runtime_error("The index is already initiated.");
         }
         cur_l = 0;
-        appr_alg = new hnswlib::HierarchicalNSW<dist_t>(l2space, maxElements, M, efConstruction, random_seed);
+        appr_alg = new catannlib::HierarchicalNSW<dist_t>(l2space, maxElements, M, efConstruction, random_seed);
         index_inited = true;
         ep_added = false;
         mapid = map_id;
@@ -132,7 +132,7 @@ public:
             std::cerr<<"Warning: Calling load_index for an already inited index. Old index is being deallocated.";
             delete appr_alg;
         }
-        appr_alg = new hnswlib::HierarchicalNSW<dist_t>(l2space, path_to_index, false, max_elements);
+        appr_alg = new catannlib::HierarchicalNSW<dist_t>(l2space, path_to_index, false, max_elements);
 		cur_l = appr_alg->cur_element_count;
     }
 	void normalize_vector(float *data, float *norm_array){
@@ -261,7 +261,7 @@ public:
 // New function returning array of realid (string) instead of index number (int)
 // ,and process multi vectors and multi conditions
 
-    py::object knnQuery_return_numpy_new3(py::object input, size_t k = 1, int num_threads = -1, std::vector<std::vector<hnswlib::condition_t>> &conditions = {}) {
+    py::object knnQuery_return_numpy_new3(py::object input, size_t k = 1, int num_threads = -1, std::vector<std::vector<catannlib::condition_t>> &conditions = {}) {
         py::array_t < dist_t, py::array::c_style | py::array::forcecast > items(input);
         auto buffer = items.request();
 
@@ -303,8 +303,8 @@ public:
                         for (size_t jcond = 0; jcond < conditions[row].size(); jcond++) {
                             std::vector<std::string> vl;
                             std::vector<dist_t> vd;
-                            hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions[row][jcond]);
-                            std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                            catannlib::SearchCondition search_condition = catannlib::SearchCondition(conditions[row][jcond]);
+                            std::priority_queue<std::pair<dist_t, catannlib::labeltype >> result = appr_alg->searchKnn(
                                 (void *) items.data(row), k, search_condition);
                             while(!result.empty()){
                                 auto result_tuple = result.top();
@@ -334,8 +334,8 @@ public:
                             std::vector<dist_t> vd;
                             vd.clear();
                             vl.clear();
-                            hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions[row][jcond]);
-                            std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                            catannlib::SearchCondition search_condition = catannlib::SearchCondition(conditions[row][jcond]);
+                            std::priority_queue<std::pair<dist_t, catannlib::labeltype >> result = appr_alg->searchKnn(
                                 (void *) (norm_array.data()+start_idx), k, search_condition);
                             while(!result.empty()){
                                 auto result_tuple = result.top();
@@ -360,7 +360,7 @@ public:
 //
 // New function returning array of realid (string) instead of index number (int)
 //
-    py::object knnQuery_return_numpy_new2(py::object input, size_t k = 1, int num_threads = -1, std::vector<hnswlib::condition_t> &conditions = {}) {
+    py::object knnQuery_return_numpy_new2(py::object input, size_t k = 1, int num_threads = -1, std::vector<catannlib::condition_t> &conditions = {}) {
         py::array_t < dist_t, py::array::c_style | py::array::forcecast > items(input);
         auto buffer = items.request();
 
@@ -389,8 +389,8 @@ public:
                 //Parallel for conditions.size() number  USING the 1st vector ONLY  items.data(0)
                 ParallelFor(0, conditions.size(), num_threads, [&](size_t ncondition, size_t threadId) {
                         //take search_condition from conditions[ncondition]
-                        hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions[ncondition]);
-                        std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                        catannlib::SearchCondition search_condition = catannlib::SearchCondition(conditions[ncondition]);
+                        std::priority_queue<std::pair<dist_t, catannlib::labeltype >> result = appr_alg->searchKnn(
                                 (void *) items.data(0), k, search_condition);
 
                         //push the result of searchKnn() to data_numpy_l,
@@ -418,9 +418,9 @@ public:
                 //Parallel for conditions.size() number
                 ParallelFor(0, conditions.size(), num_threads, [&](size_t ncondition, size_t threadId) {
                         //take search_condition from conditions[ncondition]
-                        hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions[ncondition]);
+                        catannlib::SearchCondition search_condition = catannlib::SearchCondition(conditions[ncondition]);
 
-                        std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                        std::priority_queue<std::pair<dist_t, catannlib::labeltype >> result = appr_alg->searchKnn(
                                 (void *) (norm_array.data()), k, search_condition);
 
                         //push the result of searchKnn() to data_numpy_l,
@@ -448,12 +448,12 @@ public:
 // The different is, it has multi conditions in input parameter, and the function
 // will iterate over the conditions.
 //
-    py::object knnQuery_return_numpy_new(py::object input, size_t k = 1, int num_threads = -1, std::vector<hnswlib::condition_t> &conditions = {}) {
+    py::object knnQuery_return_numpy_new(py::object input, size_t k = 1, int num_threads = -1, std::vector<catannlib::condition_t> &conditions = {}) {
 
         py::array_t < dist_t, py::array::c_style | py::array::forcecast > items(input);
         auto buffer = items.request();
 
-        std::vector<std::vector<hnswlib::labeltype>> data_numpy_l;
+        std::vector<std::vector<catannlib::labeltype>> data_numpy_l;
         std::vector<std::vector<dist_t>> data_numpy_d;
 
         size_t features;
@@ -478,8 +478,8 @@ public:
                 //Parallel for conditions.size() number  USING the 1st vector ONLY  items.data(0)
                 ParallelFor(0, conditions.size(), num_threads, [&](size_t ncondition, size_t threadId) {
                         //take search_condition from conditions[ncondition]
-                        hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions[ncondition]);
-                        std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                        catannlib::SearchCondition search_condition = catannlib::SearchCondition(conditions[ncondition]);
+                        std::priority_queue<std::pair<dist_t, catannlib::labeltype >> result = appr_alg->searchKnn(
                                 (void *) items.data(0), k, search_condition);
 
                         //push the result of searchKnn() to data_numpy_l,
@@ -504,9 +504,9 @@ public:
                 //Parallel for conditions.size() number
                 ParallelFor(0, conditions.size(), num_threads, [&](size_t ncondition, size_t threadId) {
                         //take search_condition from conditions[ncondition]
-                        hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions[ncondition]);
+                        catannlib::SearchCondition search_condition = catannlib::SearchCondition(conditions[ncondition]);
 
-                        std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                        std::priority_queue<std::pair<dist_t, catannlib::labeltype >> result = appr_alg->searchKnn(
                                 (void *) (norm_array.data()), k, search_condition);
 
                         //push the result of searchKnn() to data_numpy_l,
@@ -527,19 +527,19 @@ public:
         return py::make_tuple(data_numpy_l, data_numpy_d);
     }
 
-    py::object knnQuery_return_numpy(py::object input, size_t k = 1, int num_threads = -1, hnswlib::condition_t &conditions = {}) {
+    py::object knnQuery_return_numpy(py::object input, size_t k = 1, int num_threads = -1, catannlib::condition_t &conditions = {}) {
 
         py::array_t < dist_t, py::array::c_style | py::array::forcecast > items(input);
         auto buffer = items.request();
-        // hnswlib::labeltype *data_numpy_l;
+        // catannlib::labeltype *data_numpy_l;
         // dist_t *data_numpy_d;
 
-        std::vector<std::vector<hnswlib::labeltype>> data_numpy_l;
+        std::vector<std::vector<catannlib::labeltype>> data_numpy_l;
         std::vector<std::vector<dist_t>> data_numpy_d;
 
         size_t rows, features;
 
-        hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions);
+        catannlib::SearchCondition search_condition = catannlib::SearchCondition(conditions);
 
         if (num_threads <= 0)
             num_threads = num_threads_default;
@@ -568,12 +568,12 @@ public:
             data_numpy_l.resize(rows);
             data_numpy_d.resize(rows);
 
-            // data_numpy_l =  new hnswlib::labeltype[rows * k];
+            // data_numpy_l =  new catannlib::labeltype[rows * k];
             // data_numpy_d = new dist_t[rows * k];
 
             if(normalize==false) {
                 ParallelFor(0, rows, num_threads, [&](size_t row, size_t threadId) {
-                        std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                        std::priority_queue<std::pair<dist_t, catannlib::labeltype >> result = appr_alg->searchKnn(
                                 (void *) items.data(row), k, search_condition);
                         while(!result.empty()){
                             auto result_tuple = result.top();
@@ -594,7 +594,7 @@ public:
                         size_t start_idx = threadId * dim;
                         normalize_vector((float *) items.data(row), (norm_array.data()+start_idx));
 
-                        std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                        std::priority_queue<std::pair<dist_t, catannlib::labeltype >> result = appr_alg->searchKnn(
                                 (void *) (norm_array.data()+start_idx), k, search_condition);
                         while(!result.empty()){
                             auto result_tuple = result.top();
@@ -629,7 +629,7 @@ public:
         appr_alg->indexTags(tags, m);
     }
 
-    const hnswlib::tagcontainer getTags(size_t label) {
+    const catannlib::tagcontainer getTags(size_t label) {
         return *appr_alg->getTagsByLabel(label);
     }
 
@@ -656,9 +656,9 @@ public:
     bool ep_added;
     bool normalize;
     int num_threads_default;
-    hnswlib::labeltype cur_l;
-    hnswlib::HierarchicalNSW<dist_t> *appr_alg;
-    hnswlib::SpaceInterface<float> *l2space;
+    catannlib::labeltype cur_l;
+    catannlib::HierarchicalNSW<dist_t> *appr_alg;
+    catannlib::SpaceInterface<float> *l2space;
     std::map<int, std::string> mapid;
 
     ~Index() {
@@ -668,19 +668,19 @@ public:
     }
 };
 
-//PYBIND11_PLUGIN(hnswlib) {
-PYBIND11_MODULE(hnswlib, m) {
-        //py::module m("hnswlib");
+//PYBIND11_PLUGIN(catannlib) {
+PYBIND11_MODULE(catannlib, m) {
+        //py::module m("catannlib");
 
         py::class_<Index<float>>(m, "Index")
         .def(py::init<const std::string &, const int>(), py::arg("space"), py::arg("dim"))
         .def("init_index", &Index<float>::init_new_index, py::arg("max_elements"), py::arg("M")=16,
         py::arg("ef_construction")=200, py::arg("random_seed")=100,
         py::arg("mapid")=std::map<int, std::string>())
-        .def("knn_query", &Index<float>::knnQuery_return_numpy, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector< hnswlib::tagtype >>())
-        .def("knn_query_new", &Index<float>::knnQuery_return_numpy_new, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector< hnswlib::tagtype >>>())
-        .def("knn_query_new2", &Index<float>::knnQuery_return_numpy_new2, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector< hnswlib::tagtype >>>())
-        .def("knn_query_new3", &Index<float>::knnQuery_return_numpy_new3, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector<std::vector< hnswlib::tagtype >>>>())
+        .def("knn_query", &Index<float>::knnQuery_return_numpy, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector< catannlib::tagtype >>())
+        .def("knn_query_new", &Index<float>::knnQuery_return_numpy_new, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector< catannlib::tagtype >>>())
+        .def("knn_query_new2", &Index<float>::knnQuery_return_numpy_new2, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector< catannlib::tagtype >>>())
+        .def("knn_query_new3", &Index<float>::knnQuery_return_numpy_new3, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector<std::vector< catannlib::tagtype >>>>())
         .def("add_items", &Index<float>::addItems, py::arg("data"), py::arg("ids") = py::none(), py::arg("num_threads")=-1)
         .def("get_items", &Index<float, float>::getDataReturnList, py::arg("ids") = py::none())
         .def("get_ids_list", &Index<float>::getIdsList)
@@ -701,7 +701,7 @@ PYBIND11_MODULE(hnswlib, m) {
         .def("get_current_count", &Index<float>::getCurrentCount)
         .def("__repr__",
         [](const Index<float> &a) {
-            return "<HNSW-lib index>";
+            return "<catann-lib index>";
         }
         );
 }

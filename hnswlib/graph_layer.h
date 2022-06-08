@@ -8,7 +8,7 @@
 #include <set>
 #include <unordered_map>
 
-namespace hnswlib
+namespace catannlib
 {
 
 void mergeLinks(linkcontainer &links, linkcontainer &other_links)
@@ -170,4 +170,4 @@ public:
         }
     }
 };
-} // namespace hnswlib
+} // namespace catannlib

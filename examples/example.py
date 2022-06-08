@@ -1,4 +1,4 @@
-import hnswlib
+import catannlib
 import numpy as np
 
 dim = 16
@@ -12,7 +12,7 @@ data1 = data[:num_elements // 2]
 data2 = data[num_elements // 2:]
 
 # Declaring index
-p = hnswlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
+p = catannlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
 
 # Initing index
 # max_elements - the maximum number of elements (capacity). Will throw an exception if exceeded
@@ -49,7 +49,7 @@ p.save_index("first_half.bin")
 del p
 
 # Reiniting, loading the index
-p = hnswlib.Index(space='l2', dim=dim)  # the space can be changed - keeps the data, alters the distance function.
+p = catannlib.Index(space='l2', dim=dim)  # the space can be changed - keeps the data, alters the distance function.
 
 print("\nLoading index from 'first_half.bin'\n")
 

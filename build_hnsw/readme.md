@@ -3,13 +3,13 @@
 
 1) Need to change the git commit in 
 
-     build_hnsw/recipe/meta.yaml
+     build_catann/recipe/meta.yaml
 
      Main branch is djoko
 
 
 2) python tests are located in 
-     /build_hnsw/
+     /build_catann/
 
 
 
@@ -30,7 +30,7 @@ https://github.com/arita37/zbuild/runs/4848542134?check_suite_focus=true
 
 INFO :: The inputs making up the hashes for the built packages are as follows:
 {
-  "hnsw2-0.0.1-py37h9f74b49_0": {
+  "catann2-0.0.1-py37h9f74b49_0": {
     "recipe": {
       "gxx": "9.4.0",
       "target_platform": "linux-64"
@@ -55,7 +55,7 @@ Total disk usage observed (not including envs): 18.9K
 
 Existing build
 
-https://github.com/conda-forge/hnswlib-feedstock/blob/d2495d24bf22e8d1e2aaf8725316e076cbcf6921/.ci_support/linux_64_numpy1.16python3.7.____cpython.yaml
+https://github.com/conda-forge/catannlib-feedstock/blob/d2495d24bf22e8d1e2aaf8725316e076cbcf6921/.ci_support/linux_64_numpy1.16python3.7.____cpython.yaml
 
 
 cdt_name:

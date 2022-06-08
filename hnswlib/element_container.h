@@ -6,7 +6,7 @@
 #include <vector>
 #include <set>
 
-namespace hnswlib
+namespace catannlib
 {
 
 template <typename DataType>
@@ -111,4 +111,4 @@ public:
     }
 };
 
-} // namespace hnswlib
+} // namespace catannlib

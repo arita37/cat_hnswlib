@@ -3,7 +3,7 @@
 #include <mutex>
 #include <string.h>
 
-namespace hnswlib {
+namespace catannlib {
     typedef unsigned short int vl_type;
 
     class VisitedList {

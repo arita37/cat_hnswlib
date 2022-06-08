@@ -1,6 +1,6 @@
-# cat_hnswlib - Fork of the [Hnswlib](https://github.com/nmslib/hnswlib) with support of categorical filtering.
+# cat_catannlib - Fork of the [catannlib](https://github.com/nmslib/catannlib) with support of categorical filtering.
 
-[Motivation](https://comprehension.ml/posts/categorical-hnsw/)
+[Motivation](https://comprehension.ml/posts/categorical-catann/)
 
 New categorical methods:
 
@@ -15,13 +15,13 @@ New categorical methods:
 ## Install
 
 ```
-pip install --no-binary :all: 'git+https://github.com/generall/cat_hnswlib.git#subdirectory=python_bindings' 
+pip install --no-binary :all: 'git+https://github.com/generall/cat_catannlib.git#subdirectory=python_bindings' 
 ```
 
 ## Example
 
 ```python
-import hnswlib
+import catannlib
 import numpy as np
 from collections import defaultdict
 import tqdm
@@ -31,11 +31,11 @@ dim = 50
 elements = 10_000
 parts_count = 100
 
-hnsw = hnswlib.Index(space='cosine', dim=dim)
-hnsw.init_index(max_elements = elements, ef_construction = 10, M = 16, random_seed=45)
+catann = catannlib.Index(space='cosine', dim=dim)
+catann.init_index(max_elements = elements, ef_construction = 10, M = 16, random_seed=45)
 
 points = np.random.rand(elements, dim)
-hnsw.add_items(points)
+catann.add_items(points)
 
 
 # Assign tags by divisibility, for example
@@ -44,14 +44,14 @@ for i in range(elements):
     tags[i % parts_count].append(i)
 
 for tag, ids in tqdm.tqdm(tags.items()):
-    hnsw.add_tags(ids, tag)
-    hnsw.index_tagged(tag, m=8)
+    catann.add_tags(ids, tag)
+    catann.index_tagged(tag, m=8)
 
 target = np.float32(np.random.random((1, dim)))
 condition = [[(False, 66)]]
 
 # Result will only include points with id % 66 == 0
-found_labels, found_dist = hnsw.knn_query(target, k=10, conditions=condition)
+found_labels, found_dist = catann.knn_query(target, k=10, conditions=condition)
 ```
 
 # ToDo

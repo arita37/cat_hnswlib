@@ -6,7 +6,7 @@
 #include <vector>
 #include <set>
 
-namespace hnswlib
+namespace catannlib
 {
 
 class ConditionOrClause {
@@ -96,4 +96,4 @@ public:
         return candidates;
     }
 };
-} // namespace hnswlib
+} // namespace catannlib

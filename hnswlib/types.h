@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-namespace hnswlib
+namespace catannlib
 {
 typedef unsigned int tableint;
 typedef size_t labeltype;
@@ -59,4 +59,4 @@ static void readMap(std::istream &in, std::unordered_map<T1, T2> &podRef)
 }
 
 
-} // namespace hnswlib
+} // namespace catannlib

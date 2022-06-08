@@ -1,4 +1,4 @@
-import hnswlib
+import catannlib
 import numpy as np
 
 dim = 16
@@ -8,7 +8,7 @@ num_elements = 10000
 data = np.float32(np.random.random((num_elements, dim)))
 
 # Declaring index
-p = hnswlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
+p = catannlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
 
 # Initing index
 # max_elements - the maximum number of elements, should be known beforehand
@@ -44,7 +44,7 @@ p.save_index("first_half.bin")
 del p
 
 # Reiniting, loading the index
-p = hnswlib.Index(space='l2', dim=dim)  # you can change the sa
+p = catannlib.Index(space='l2', dim=dim)  # you can change the sa
 
 print("\nLoading index from 'first_half.bin'\n")
 p.load_index("first_half.bin")

@@ -5,7 +5,7 @@ class RandomSelfTestCase(unittest.TestCase):
     def testRandomSelf(self):
       for idx in range(16):
         print("\n**** Index save-load test ****\n")
-        import hnswlib
+        import catannlib
         import numpy as np
         
         np.random.seed(idx)
@@ -16,7 +16,7 @@ class RandomSelfTestCase(unittest.TestCase):
         data = np.float32(np.random.random((num_elements, dim)))
 
         # Declaring index
-        p = hnswlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
+        p = catannlib.Index(space='l2', dim=dim)  # possible options are l2, cosine or ip
 
         # Initing index
         # max_elements - the maximum number of elements, should be known beforehand
@@ -66,7 +66,7 @@ class RandomSelfTestCase(unittest.TestCase):
         print("\n**** Mark delete test ****\n")
         # Reiniting, loading the index
         print("Reiniting")
-        p = hnswlib.Index(space='l2', dim=dim)
+        p = catannlib.Index(space='l2', dim=dim)
 
         print("\nLoading index from 'first_half.bin'\n")
         p.load_index("first_half.bin")
@@ -110,7 +110,7 @@ class RandomSelfTestCase(unittest.TestCase):
 
         # checking saving/loading index with elements marked as deleted
         p.save_index("with_deleted.bin")
-        p = hnswlib.Index(space='l2', dim=dim)
+        p = catannlib.Index(space='l2', dim=dim)
         p.load_index("with_deleted.bin")
         p.set_ef(100)
 

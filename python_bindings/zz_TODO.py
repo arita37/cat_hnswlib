@@ -2,7 +2,7 @@
    Add internal mapping Index in binding.cpp
 
 
-   dictionnary :   HNSW Index 0....10000    ---> map to realid   
+   dictionnary :   catann Index 0....10000    ---> map to realid   
         mapid = {   0 : 'myid01',  1:'myid02' , .... }
 
          
@@ -84,7 +84,7 @@
 #################### Goal
 Add a new method     knnQuery_return_numpy_new  here
    
-   https://github.com/arita37/cat_hnswlib/blob/loop/python_bindings/bindings.cpp
+   https://github.com/arita37/cat_catannlib/blob/loop/python_bindings/bindings.cpp
 
 
 #### current   
@@ -112,20 +112,20 @@ binding.cpp  : add new method:    knn_query_new
    
    
     
-  PYBIND11_PLUGIN(hnswlib) {
-        py::module m("hnswlib");
+  PYBIND11_PLUGIN(catannlib) {
+        py::module m("catannlib");
   
           .def("knn_query_new", &Index<float>::knnQuery_return_numpy_new, 
                                          py::arg("data"),    // only 1 vector
                                          py::arg("k")=1, 
                                          py::arg("num_threads")=-1, 
-                                         py::arg("conditions")=std::vector< std::vector<std::vector< hnswlib::tagtype >>  >())   // list of condition
+                                         py::arg("conditions")=std::vector< std::vector<std::vector< catannlib::tagtype >>  >())   // list of condition
                                          // Triple Vector  [ [[  tagtype  ]]  ]
     
 .....
     
     
-       py::object knnQuery_return_numpy_new(py::object input, size_t k = 1, int num_threads = -1, hnswlib::condition_t &conditions = {}) {
+       py::object knnQuery_return_numpy_new(py::object input, size_t k = 1, int num_threads = -1, catannlib::condition_t &conditions = {}) {
 
         py::array_t < dist_t, py::array::c_style | py::array::forcecast > items(input);
         auto buffer = items.request();
@@ -146,9 +146,9 @@ binding.cpp  : add new method:    knn_query_new
                     num_threads, 
                     [&](size_t ncondition, size_t threadId) {
                           
-                           //  hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions);
+                           //  catannlib::SearchCondition search_condition = catannlib::SearchCondition(conditions);
                       
-                           std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> 
+                           std::priority_queue<std::pair<dist_t, catannlib::labeltype >> 
                            result = appr_alg->searchKnn((void *) items.data(row), k,  (void *) conditions);                      
                            while(!result.empty()){    
     
@@ -162,7 +162,7 @@ binding.cpp  : add new method:    knn_query_new
   
   ##############################################################################################
   ##### Current Python version ################################################################
-    def hnsw_useremb_get_topk(vecti, genreid=[2323,232,3232], topk=100, dimvect=512, filter_cond='must'):
+    def catann_useremb_get_topk(vecti, genreid=[2323,232,3232], topk=100, dimvect=512, filter_cond='must'):
            ####  genrei: list_siid
            global clientdrant
           
@@ -183,7 +183,7 @@ binding.cpp  : add new method:    knn_query_new
         
 #################################################################################### ##########################################                 
     #### New Python version              
-    def hnsw_useremb_get_topk(vecti, genreid=[2323,232,3232], topk=100, dimvect=512, filter_cond='must'):
+    def catann_useremb_get_topk(vecti, genreid=[2323,232,3232], topk=100, dimvect=512, filter_cond='must'):
            ####  genrei: list_siid
            global clientdrant
            vecti = np.array([ float(x) for x in  vecti.split(",")] ,  dtype='float32')
