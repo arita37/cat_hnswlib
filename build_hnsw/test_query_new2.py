@@ -27,6 +27,7 @@ def test_query_new2(vecti, topk=1, genreid=[10,20]):
     #print("Time elapsed = ", elapsedtime)
     return idxall, elapsedtime
 
+
 print("Load data ...")
 dim = 512
 num_elem = 10000
@@ -80,4 +81,6 @@ for i in range(len(result)):
     for j in range(len(result[i])):
         if result[i][j] != result2[i][j]:
             print("not same")
+
+
 
