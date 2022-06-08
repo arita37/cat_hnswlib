@@ -37,6 +37,7 @@ jobs:
           conda update --all
           python test1.py
           python test_query_new2.py
+          python test_query_new3.py
 
 
       - name: 'Upload Artifact'

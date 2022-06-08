@@ -30,7 +30,7 @@ def test_query_new2(vecti, topk=1, genreid=[10,20]):
 
 print("Load data ...")
 dim = 512
-num_elem = 10000
+num_elem = 47
 
 data = np.float32(np.random.random((num_elem, dim)))
 p = hnswlib.Index(space='l2', dim=dim)
@@ -54,7 +54,9 @@ vecti = np.float32(list(range(1, dim+1, 1)))
 for i in range(dim):
     vecti[i] /= dim
 
-print("Query test ...")
+
+
+print("####################  Query test 2...")
 elapsedtimes = []
 r = 1
 k = 50
@@ -67,6 +69,9 @@ meantime = np.mean(elapsedtimes)
 print("k = ",k, ", loop ", r, " times")
 print("New2 Elapsed time (meantime) = ", meantime)
 
+
+
+print("####################  Query test 1...")
 elapsedtimes = []
 for i in range(r):
     #print("old loop ", i)
@@ -77,6 +82,9 @@ meantime = np.mean(elapsedtimes)
 print("\nk = ",k, ", loop ", r, " times")
 print("New Elapsed time (meantime) = ", meantime)
 
+
+
+print("####################  Check...")
 for i in range(len(result)):
     for j in range(len(result[i])):
         if result[i][j] != result2[i][j]:

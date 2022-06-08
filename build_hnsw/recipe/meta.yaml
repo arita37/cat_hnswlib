@@ -9,7 +9,8 @@ source:
 
   ### knn_query_new version
   git_url: https://github.com/arita37/cat_hnswlib.git
-  git_rev: c83fd9250d7eba67d487b540cbb7881bec0fb250
+  # git_rev: c83fd9250d7eba67d487b540cbb7881bec0fb250   ### version 1
+  git_rev: 389629c8abae8308335bf42664ecbc726c743aff     ### Version 3 new-query3
   
   ###Original : ok running
   #git_url: https://github.com/arita37/cat_hnswlib.git

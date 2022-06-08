@@ -259,6 +259,106 @@ public:
 
 //
 // New function returning array of realid (string) instead of index number (int)
+// ,and process multi vectors and multi conditions
+
+    py::object knnQuery_return_numpy_new3(py::object input, size_t k = 1, int num_threads = -1, std::vector<std::vector<hnswlib::condition_t>> &conditions = {}) {
+        py::array_t < dist_t, py::array::c_style | py::array::forcecast > items(input);
+        auto buffer = items.request();
+
+        std::vector<std::vector<std::string>> data_numpy_l;
+        std::vector<std::vector<dist_t>> data_numpy_d;
+
+        size_t rows, features;
+
+        if (num_threads <= 0)
+            num_threads = num_threads_default;
+
+        {
+            py::gil_scoped_release l;
+
+            if (buffer.ndim != 2 && buffer.ndim != 1) throw std::runtime_error("data must be a 1d/2d array");
+            if (buffer.ndim == 2) {
+                rows = buffer.shape[0];
+                features = buffer.shape[1];
+            }
+            else{
+                rows = 1;
+                features = buffer.shape[0];
+            }
+
+            if (rows != conditions.size()) throw std::runtime_error("input vector size must be equal to filters size");
+
+            // avoid using threads when the number of searches is small:
+
+            if((int)rows<=num_threads*4){
+                num_threads=1;
+            }
+
+            data_numpy_l.resize(rows);
+            data_numpy_d.resize(rows);
+
+            // ParallelFor to handle multi vector, and internal loop for the conditions
+            if(normalize==false) {
+                ParallelFor(0, rows, num_threads, [&](size_t row, size_t threadId) {
+                        for (size_t jcond = 0; jcond < conditions[row].size(); jcond++) {
+                            std::vector<std::string> vl;
+                            std::vector<dist_t> vd;
+                            hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions[row][jcond]);
+                            std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                                (void *) items.data(row), k, search_condition);
+                            while(!result.empty()){
+                                auto result_tuple = result.top();
+                                vd.push_back(result_tuple.first);
+                                if (mapid.empty())
+                                    vl.push_back(std::to_string(result_tuple.second));
+                                else
+                                    vl.push_back(mapid[result_tuple.second]);
+                                result.pop();
+                            }
+                            std::reverse(vd.begin(),vd.end());
+                            std::reverse(vl.begin(),vl.end());
+                            // Insert vd and vl to data_numpy_d and data_numpy_l
+                            data_numpy_d.at(row).insert(data_numpy_d.at(row).end(), vd.begin(), vd.end());
+                            data_numpy_l.at(row).insert(data_numpy_l.at(row).end(), vl.begin(), vl.end());
+                        }
+                });
+            }
+            else{
+                std::vector<float> norm_array(num_threads*features);
+                ParallelFor(0, rows, num_threads, [&](size_t row, size_t threadId) {
+
+                    size_t start_idx = threadId * dim;
+                    normalize_vector((float *) items.data(row), (norm_array.data()+start_idx));
+                        for (size_t jcond = 0; jcond < conditions[row].size(); jcond++) {
+                            std::vector<std::string> vl;
+                            std::vector<dist_t> vd;
+                            vd.clear();
+                            vl.clear();
+                            hnswlib::SearchCondition search_condition = hnswlib::SearchCondition(conditions[row][jcond]);
+                            std::priority_queue<std::pair<dist_t, hnswlib::labeltype >> result = appr_alg->searchKnn(
+                                (void *) (norm_array.data()+start_idx), k, search_condition);
+                            while(!result.empty()){
+                                auto result_tuple = result.top();
+                                vd.push_back(result_tuple.first);
+                                if (mapid.empty())
+                                    vl.push_back(std::to_string(result_tuple.second));
+                                else
+                                    vl.push_back(mapid[result_tuple.second]);
+                                result.pop();
+                            }
+                            std::reverse(vd.begin(),vd.end());
+                            std::reverse(vl.begin(),vl.end());
+                            data_numpy_d.at(row).insert(data_numpy_d.at(row).end(), vd.begin(), vd.end());
+                            data_numpy_l.at(row).insert(data_numpy_l.at(row).end(), vl.begin(), vl.end());
+                        }
+                });
+            }
+        }
+        return py::make_tuple(data_numpy_l, data_numpy_d);
+    }
+
+//
+// New function returning array of realid (string) instead of index number (int)
 //
     py::object knnQuery_return_numpy_new2(py::object input, size_t k = 1, int num_threads = -1, std::vector<hnswlib::condition_t> &conditions = {}) {
         py::array_t < dist_t, py::array::c_style | py::array::forcecast > items(input);
@@ -580,6 +680,7 @@ PYBIND11_MODULE(hnswlib, m) {
         .def("knn_query", &Index<float>::knnQuery_return_numpy, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector< hnswlib::tagtype >>())
         .def("knn_query_new", &Index<float>::knnQuery_return_numpy_new, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector< hnswlib::tagtype >>>())
         .def("knn_query_new2", &Index<float>::knnQuery_return_numpy_new2, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector< hnswlib::tagtype >>>())
+        .def("knn_query_new3", &Index<float>::knnQuery_return_numpy_new3, py::arg("data"), py::arg("k")=1, py::arg("num_threads")=-1, py::arg("conditions")=std::vector<std::vector<std::vector<std::vector< hnswlib::tagtype >>>>())
         .def("add_items", &Index<float>::addItems, py::arg("data"), py::arg("ids") = py::none(), py::arg("num_threads")=-1)
         .def("get_items", &Index<float, float>::getDataReturnList, py::arg("ids") = py::none())
         .def("get_ids_list", &Index<float>::getIdsList)
@@ -603,6 +704,5 @@ PYBIND11_MODULE(hnswlib, m) {
             return "<HNSW-lib index>";
         }
         );
-        //return m.ptr();
 }
 
