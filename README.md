@@ -1,24 +1,34 @@
-# catannlib - fast approximate nearest neighbor search
-Header-only C++ catann implementation with python bindings. Paper code for the catann 200M SIFT experiment
-
-**NEWS:**
-
-**Thanks to Louis Abraham ([@louisabraham](https://github.com/louisabraham)) catannlib is now can be installed via pip!**
-
-Highlights:
-1) Lightweight, header-only, no dependencies other than C++ 11.
-2) Interfaces for C++, python and R (https://github.com/jlmelville/rcppcatann).
-3) Has full support for incremental index construction. Has support for element deletions 
-(currently, without actual freeing of the memory).
-4) Can work with custom user defined distances (C++).
-5) Significantly less memory footprint and faster build time compared to current nmslib's implementation.
-
-Description of the algorithm parameters can be found in [ALGO_PARAMS.md](ALGO_PARAMS.md).
+# catannlib - 
 
 
-### Python bindings
 
-#### Supported distances:
+```
+#### os: Ubuntu, gcc:7.5.0, python: 3.6.9
+
+   cd from python_bindings
+
+   make -f bindings.make
+
+
+
+```
+
+
+
+##### Highlights:
+        1) Lightweight, header-only, no dependencies other than C++ 11.
+        2) Interfaces for C++, python and R (https://github.com/jlmelville/rcppcatann).
+        3) Has full support for incremental index construction. Has support for element deletions 
+        (currently, without actual freeing of the memory).
+        4) Can work with custom user defined distances (C++).
+        5) Significantly less memory footprint and faster build time compared to current nmslib's implementation.
+
+
+##### Description of the algorithm parameters can be found in [ALGO_PARAMS.md](ALGO_PARAMS.md).
+
+##### Python bindings
+
+##### Supported distances:
 
 | Distance         | parameter       | Equation                |
 | -------------    |:---------------:| -----------------------:|
